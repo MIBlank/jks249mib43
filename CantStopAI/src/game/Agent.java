@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public abstract class Agent {
 	public final int playerID;
-	private Gamestate state;
+	protected Gamestate state;
 	
 	public Agent(int playerID, Gamestate state) {
 		this.playerID = playerID;
