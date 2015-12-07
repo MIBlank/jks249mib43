@@ -33,4 +33,30 @@ public class Column {
 			return player2_temp_progress;
 	}
 	
+	public void reset_temp_progress(int playerid){
+		if (playerid == 0)
+			player1_temp_progress = 0;
+		else
+			player2_temp_progress = 0;
+	}
+	
+	public void save_temp_progress(int playerid){
+		if (playerid == 0){
+			player1_saved_progress += player1_temp_progress;
+			player1_saved_progress = Math.min(this.column_size,player1_saved_progress);
+			player1_temp_progress = 0;
+			if(player1_saved_progress == column_size){
+				is_finished = true;
+			}
+		}
+		else{
+			player2_saved_progress += player2_temp_progress;
+			player2_saved_progress = Math.min(this.column_size,player2_saved_progress);
+			player2_temp_progress = 0;
+			if(player2_saved_progress == column_size){
+				is_finished = true;
+			}
+		}
+	}
+	
 }

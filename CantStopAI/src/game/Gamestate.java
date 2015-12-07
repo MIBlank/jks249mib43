@@ -6,13 +6,18 @@ public class Gamestate {
 	public int moves_completed;
 	public int freeCones = 0;
 	public ArrayList<Column> columnList = new ArrayList<Column>();
-	public int columns_finished = 0;
+	public int player1_columns_finished = 0;
+	public int player2_columns_finished = 0;
 	public ArrayList<Integer> active_columns = new ArrayList<Integer>();
+	public ArrayList<Integer> finished_columns = new ArrayList<Integer>();
 	
 	Gamestate(){
 		columnList.add(null);
 		columnList.add(null);
-		for(int i = 2; i < 13; i++){
+		for(int i = 2; i < 8; i++){
+			columnList.add(new Column(i));
+		}
+		for(int i = 6; i > 1; i--){
 			columnList.add(new Column(i));
 		}
 	}
@@ -61,4 +66,22 @@ public class Gamestate {
 	public int turnLength() {
 		return moves_completed;
 	}
+	
+	/**
+	 * Updates a player's number of finished columns.
+	 */
+	public void update_finished_columns(int col, int playerID){
+		if(playerID == 0){
+			player1_columns_finished++;
+		}
+		else{
+			player2_columns_finished++;
+		}
+		finished_columns.add(col);
+	}
+	
+	public boolean is_valid_column(int col){
+		return ((active_columns.contains(col)) || !(finished_columns.contains(col)));
+	}
+	
 }
