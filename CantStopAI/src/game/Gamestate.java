@@ -20,6 +20,7 @@ public class Gamestate {
 		for(int i = 6; i > 1; i--){
 			columnList.add(new Column(i));
 		}
+		freeCones = 3;
 	}
 	
 	/**
@@ -40,7 +41,7 @@ public class Gamestate {
 	 * cone in this column.
 	 */
 	public int getTempProgress(int column) {
-		return columnList.get(column).get_temp_progress(column);
+		return columnList.get(column).get_temp_progress(Controller.active_playerID);
 	}
 	
 	/**
@@ -81,7 +82,8 @@ public class Gamestate {
 	}
 	
 	public boolean is_valid_column(int col){
-		return ((active_columns.contains(col)) || !(finished_columns.contains(col)));
+		//I changed this. -James
+		return (((active_columns.contains(col)) || numFreeCones() > 0) && !(finished_columns.contains(col)));
 	}
 	
 }

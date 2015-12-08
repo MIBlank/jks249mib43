@@ -28,7 +28,7 @@ public class BasicAgent extends Agent {
 				if(chosenMove.columns[1] == col) {
 					tempProg += 1;
 				}
-				if(state.getProgress(col, playerID) + tempProg >= state.getMaxProgress(col)) {
+				if(tempProg > 0 && state.getProgress(col, playerID) + tempProg >= state.getMaxProgress(col)) {
 					chosenMove.stop = true;
 					break;
 				}

@@ -21,7 +21,8 @@ public class NeuralAgent extends Agent {
 	public Move getNextMove(ArrayList<Move> options) {
 		int base = 0;
 		
-		int numCompleted = 0;
+		int numPastCompleted = 0;
+		int numJustCompleted = 0;
 		for(int i = 2; i <= 12; i++) {
 			int playerProgress = state.getProgress(i, playerID);
 			inputs[base] = playerProgress;
@@ -30,13 +31,18 @@ public class NeuralAgent extends Agent {
 			inputs[base + 22] = tempProgress;
 			base++;
 			
-			if(playerProgress + tempProgress == state.getMaxProgress(i)) {
-				numCompleted++;
+			if(playerProgress == state.getMaxProgress(i)) {
+				numPastCompleted++;
+			}
+			else {
+				if(playerProgress + tempProgress == state.getMaxProgress(i)) {
+					numJustCompleted++;
+				}
 			}
 		}
 		inputs[33] = state.numFreeCones();
 		inputs[34] = state.turnLength();
-		inputs[35] = numCompleted;
+		inputs[35] = numJustCompleted;
 		
 		
 		Arrays.fill(outputs, 0);
@@ -49,7 +55,9 @@ public class NeuralAgent extends Agent {
 		for(Move move: options) {
 			int score = 0;
 			for(int col: move.columns) {
-				score += outputs[col];
+				if(col != 0) {
+					score += outputs[col];
+				}
 			}
 			
 			if(score > bestScore) {
@@ -60,7 +68,7 @@ public class NeuralAgent extends Agent {
 		
 		//outputs[0] = score for stop, outputs[1] = score for continue
 		//chose option with higher score, break ties randomly.
-		if(outputs[0] > outputs[1]) {
+		if(outputs[0] > outputs[1] || numJustCompleted + numPastCompleted == 3) {
 			bestMove.stop = true;
 		}
 		else {
