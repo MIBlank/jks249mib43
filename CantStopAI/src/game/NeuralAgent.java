@@ -82,5 +82,11 @@ public class NeuralAgent extends Agent {
 		
 		return bestMove;
 	}
-
+	
+	/**
+	 * sets this agent's network to be a copy of parent's network with n mutations
+	 */
+	public void mutate(NeuralAgent parent, int n) {
+		this.network = parent.network.mutate(n);
+	}
 }

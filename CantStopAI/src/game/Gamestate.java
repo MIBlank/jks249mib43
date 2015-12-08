@@ -23,6 +23,26 @@ public class Gamestate {
 		freeCones = 3;
 	}
 	
+	public void reset() {
+		columnList.clear();
+		columnList.add(null);
+		columnList.add(null);
+		for(int i = 2; i < 8; i++){
+			columnList.add(new Column(i));
+		}
+		for(int i = 6; i > 1; i--){
+			columnList.add(new Column(i));
+		}
+		
+		freeCones = 3;
+		
+		moves_completed = 0;
+		player1_columns_finished = 0;
+		player2_columns_finished = 0;
+		active_columns.clear();
+		finished_columns.clear();
+	}
+	
 	/**
 	 * @param column the column in question, from 2 to 12
 	 * @param playerID the player whose progress we are checking, either 0 or 1.

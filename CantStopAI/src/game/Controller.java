@@ -4,8 +4,13 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Controller {
-	public static final boolean DEBUG = true;
-	public static final boolean TEST_GAME = true;
+	public static final boolean DEBUG = false;
+	public static final boolean TEST_GAME = false;
+	
+	public static final int GAMES_PER_MATCH = 1000;
+	public static final int NUM_MATCHES = 10000;
+	//the expected number of mutations per match
+	public static final int MUTATION_RATE = 20;
 	
 	public static Gamestate gamestate = new Gamestate();
 	public static Random random = new Random();
@@ -351,6 +356,7 @@ public class Controller {
 	public static int doOneGame(Agent p1, Agent p2) {
 		player1 = p1;
 		player2 = p2;
+		gamestate.reset();
 		while((gamestate.player1_columns_finished < 3) && gamestate.player2_columns_finished < 3) {
 			take_turn(active_playerID);
 			gamestate.moves_completed = 0;
@@ -363,6 +369,22 @@ public class Controller {
 			System.out.println("Player "+winner+" wins!");
 		}
 		return winner;
+	}
+	
+	/**
+	 * 
+	 * @return first value: id of winner. second value: win count of winner
+	 */
+	public static int[] doMatch(Agent p1, Agent p2) {
+		int[] wins = new int[]{0,0};
+		for(int game = 0; game < GAMES_PER_MATCH; game++) {
+			int winner = doOneGame(p1, p2);
+			wins[winner] ++;
+		}
+		if(wins[0] > wins[1]) {
+			return new int[]{0, wins[0]};
+		}
+		return new int[]{1, wins[1]};
 	}
 	
 	
@@ -382,6 +404,58 @@ public class Controller {
 		}*/
 		if(TEST_GAME) {
 			doOneGame(new BasicAgent(0, gamestate), new BasicAgent(1, gamestate));
+		}
+		else {
+			NeuralAgent p1 = new NeuralAgent(0, gamestate);
+			p1.mutate(p1, 50);
+			
+			NeuralAgent p2 = new NeuralAgent(1, gamestate);
+			p2.mutate(p2, 50);
+			
+			for(int trial = 0; trial < NUM_MATCHES; trial++) {
+				int[] result = doMatch(p1, p2);
+				//System.out.println("Trial " + trial + ": Player " + result[0] + " wins " + result[1]);
+				int numMutations = 0;
+				while(random.nextInt(MUTATION_RATE) != 0) {
+					numMutations++;
+				}
+				if(result[0] == 0) {
+					p2.mutate(p1, numMutations);
+				}
+				else {
+					p1.mutate(p2, numMutations);
+				}
+				
+				//every 100 rounds, do a match against basic bot for reference
+				if(trial % 100 == 99) {
+					int wins = 0;
+					if(result[0] == 0) {
+						int[] result2 = doMatch(p1, new BasicAgent(1, gamestate));
+						if(result2[0] == 0) {
+							wins = result2[1];
+						}
+						else {
+							wins = GAMES_PER_MATCH - result2[1];
+						}
+						if(trial == NUM_MATCHES - 1) {
+							p1.network.save("winner.txt");
+						}
+					}
+					else {
+						int[] result2 = doMatch(new BasicAgent(0, gamestate), p2);
+						if(result2[0] == 1) {
+							wins = result2[1];
+						}
+						else {
+							wins = GAMES_PER_MATCH - result2[1];
+						}
+						if(trial == NUM_MATCHES - 1) {
+							p2.network.save("winner.txt");
+						}
+					}
+					System.out.println("Trial " + trial + ": Wins vs. BasicAgent: " + wins + "/" + GAMES_PER_MATCH);
+				}
+			}
 		}
 	}
 	

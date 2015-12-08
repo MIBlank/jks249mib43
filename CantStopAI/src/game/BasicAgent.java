@@ -34,7 +34,7 @@ public class BasicAgent extends Agent {
 				}
 				progress += ((float)tempProg)/state.getMaxProgress(col);
 			}
-			if(progress >= 0.4) {
+			if(progress >= 0.5) {
 				chosenMove.stop = true;
 			}
 		}
