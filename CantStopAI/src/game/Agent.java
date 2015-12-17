@@ -16,4 +16,8 @@ public abstract class Agent {
 	 * @return the move that this agent chooses to make.
 	 */
 	public abstract Move getNextMove(ArrayList<Move> options);
+	
+	public void reset() {
+		
+	}
 }

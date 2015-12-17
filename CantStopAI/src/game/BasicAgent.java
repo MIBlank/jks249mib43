@@ -10,14 +10,25 @@ import java.util.Random;
  *
  */
 public class BasicAgent extends Agent {
+	
+	private Random random;
+	private boolean seed;
+	private static final int SEED_VALUE = 0;
 
-	public BasicAgent(int playerID, Gamestate state) {
+	public BasicAgent(int playerID, Gamestate state, boolean seed) {
 		super(playerID, state);
+		this.seed = seed;
+		if(seed) {
+			random = new Random(SEED_VALUE);
+		}
+		else {
+			random = new Random();
+		}
 	}
 
 	@Override
 	public Move getNextMove(ArrayList<Move> options) {
-		Move chosenMove = options.get(new Random().nextInt(options.size()));
+		Move chosenMove = options.get(random.nextInt(options.size()));
 		if(state.numFreeCones() == 0) {
 			float progress = 0;
 			for(int col = 2; col <= 12; col++) {
@@ -39,6 +50,13 @@ public class BasicAgent extends Agent {
 			}
 		}
 		return chosenMove;
+	}
+	
+	@Override
+	public void reset() {
+		if(seed) {
+			random = new Random(SEED_VALUE);
+		}
 	}
 
 }
